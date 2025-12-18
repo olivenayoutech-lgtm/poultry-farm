@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐔 Poultry Farm - Admin & User System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            max-width: 450px;
+            margin: 80px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .role-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .role-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-warning { background: #ffc107; color: #333; }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: none;
+        }
+
+        .container.active {
+            display: block;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-badge {
+            background: #ffc107;
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .nav-tab.active {
+            background: white;
+            border-bottom: 3px solid #667eea;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .user-list {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .user-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-item:hover {
+            background: #f8f9fa;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .expense-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .expense-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .expense-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .expense-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .settings-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .settings-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .help-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .help-box h4 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-tab {
+                flex: 1 1 50%;
+            }
+
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-header">
+            <div style="font-size: 4em; margin-bottom: 20px;">🐔</div>
+            <h1>Poultry Farm System</h1>
+            <p style="color: #666;">Admin & User Login</p>
+        </div>
+
+        <div class="role-selector">
+            <button class="role-btn active" onclick="selectRole('admin')">
+                🔐 Admin/Host
+            </button>
+            <button class="role-btn" onclick="selectRole('user')">
+                👤 User
+            </button>
+        </div>
+
+        <div id="loginAlert"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">👤 Username</label>
+                <input type="text" id="username" placeholder="Enter username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">🔑 Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">🔓 Login</button>
+        </form>
+
+        <div class="help-box" style="margin-top: 30px;">
+            <h4>🔐 Default Credentials:</h4>
+            <p><strong>Admin:</strong> admin / admin2025</p>
+            <p><strong>User:</strong> user1 / user123</p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                Change passwords after first login!
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="appContainer" class="container">
+        <div class="header">
+            <div>
+                <h1 id="appTitle">🐔 Poultry Farm Expense Tracker</h1>
+                <p id="appSubtitle">Manage your farm expenses</p>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="user-badge">
+                    <span>👤 <strong id="currentUsername">User</strong></span>
+                    <span id="adminBadge" style="display: none;" class="admin-badge">ADMIN</span>
+                </div>
+                <button class="btn btn-danger" onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+
+        <div class="nav-tabs" id="mainNav">
+            <!-- Navigation will be dynamically loaded -->
+        </div>
+
+        <div class="content">
+            <div id="alertContainer"></div>
+            <div id="tabContainer">
+                <!-- Tabs will be dynamically loaded -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== SYSTEM INITIALIZATION ====================
+
+        let currentRole = 'admin';
+        let currentUser = null;
+        let isAdmin = false;
+
+        // Initialize default accounts
+        function initializeSystem() {
+            // Create default admin if not exists
+            if (!localStorage.getItem('users')) {
+                const defaultUsers = [
+                    {
+                        username: 'admin',
+                        password: hashPassword('admin2025'),
+                        role: 'admin',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        username: 'user1',
+                        password: hashPassword('user123'),
+                        role: 'user',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('users', JSON.stringify(defaultUsers));
+            }
+        }
+
+        // Simple password hashing
+        function hashPassword(password) {
+            let hash = 0;
+            for (let i = 0; i < password.length; i++) {
+                const char = password.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash.toString();
+        }
+
+        // ==================== ROLE SELECTION ====================
+
+        function selectRole(role) {
+            currentRole = role;
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            if (role === 'admin') {
+                document.getElementById('username').placeholder = 'Admin username';
+            } else {
+                document.getElementById('username').placeholder = 'User username';
+            }
+        }
+
+        // ==================== LOGIN SYSTEM ====================
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.username === username);
+
+            if (!user) {
+                showLoginAlert('❌ User not found!', 'danger');
+                return;
+            }
+
+            if (hashPassword(password) !== user.password) {
+                showLoginAlert('❌ Incorrect password!', 'danger');
+                return;
+            }
+
+            if (currentRole === 'admin' && user.role !== 'admin') {
+                showLoginAlert('❌ Not an admin account!', 'danger');
+                return;
+            }
+
+            if (currentRole === 'user' && user.role === 'admin') {
+                showLoginAlert('ℹ️ Use Admin login for admin accounts', 'info');
+                return;
+            }
+
+            // Successful login
+            currentUser = user;
+            isAdmin = user.role === 'admin';
+
+            sessionStorage.setItem('currentUser', JSON.stringify(user));
+            showLoginAlert('✓ Login successful!', 'success');
+
+            setTimeout(() => {
+                showApp();
+            }, 500);
+        });
+
+        function showLoginAlert(message, type) {
+            const container = document.getElementById('loginAlert');
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 3000);
+        }
+
+        // ==================== APP DISPLAY ====================
+
+        function showApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appContainer').classList.add('active');
+
+            document.getElementById('currentUsername').textContent = currentUser.username;
+
+            if (isAdmin) {
+                document.getElementById('adminBadge').style.display = 'inline-block';
+                loadAdminInterface();
+            } else {
+                loadUserInterface();
+            }
+        }
+
+        function loadAdminInterface() {
+            const nav = document.getElementById('mainNav');
+            nav.innerHTML = `
+                <button class="nav-tab active" onclick="showAdminTab('dashboard')">📊 Dashboard</button>
+                <button class="nav-tab" onclick="showAdminTab('users')">👥 User Management</button>
+                <button class="nav-tab" onclick="showAdminTab('expenses')">💰 My Expenses</button>
+                <button class="nav-tab" onclick="showAdminTab('settings')">⚙️ Settings</button>
+                <button class="nav-tab" onclick="showAdminTab('hosting')">🌐 Go Live</button>
+            `;
+
+            showAdminTab('dashboard');
+        }
+
+        function showAdminTab(tab) {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const container = document.getElementById('tabContainer');
+
+            if (tab === 'dashboard') {
+                showAdminDashboard();
+            } else if (tab === 'users') {
+                showUserManagement();
+            } else if (tab === 'expenses') {
+                showExpenses();
+            } else if (tab === 'settings') {
+                showSettings();
+            } else if (tab === 'hosting') {
+                showHostingGuide();
+            }
+        }
+
+        function showAdminDashboard() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const totalUsers = users.filter(u => u.role === 'user').length;
+
+            document.getElementById('tabContainer').innerHTML = `
+                <h2>📊 Admin Dashboard</h2>
+
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <h3>${totalUsers}</h3>
+                        <p>Total Users</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>1</h3>
+                        <p>Admins</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${users.length}</h3>
+                        <p>Total Accounts</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active</h3>
+                        <p>System Status</p>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>🎉 Welcome, Admin!</h3>
+                    <p>You have full control of the system. You can:</p>
+                    <ul style="margin: 15px 0; line-height: 2;">
+                        <li>👥 Manage all user accounts</li>
+                        <li>➕ Add new users</li>
+                        <li>🗑️ Remove users</li>
+                        <li>🔑 Reset user passwords</li>
+                        <li>💰 Manage your own expenses</li>
+                        <li>🌐 Host this site live</li>
+                    </ul>
+                    <p style="color: #666; margin-top: 15px;">
+                        Start by clicking "👥 User Management" to add team members!
+                    </p>
+                </div>
+            `;
+        }
+
+        function showUserManagement() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const regularUsers = users.filter(u => u.role === 'user');
+
+            let userListHTML = '';
+            regularUsers.forEach(user => {
+                userListHTML += `
+                    <div class="user-item">
+                        <div class="user-info">
+                            <div class="user-icon">👤</div>
+                            <div>
+                                <strong>${user.username}</strong>
+                                <p style="font-size: 0.9em; color: #666; margin-top: 3px;">
+                                    Created: ${new Date(user.createdAt).toLocaleDateString()}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="user-actions">
+                            <button class="action-btn btn-warning" onclick="resetUserPassword('${user.username}')">
+                                🔑 Reset Password
+                            </button>
+                            <button class="action-btn btn-danger" onclick="deleteUser('${user.username}')">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('tabContainer').innerHTML = `
+                <h2>👥 User Management</h2>
+
+                <div class="settings-card">
+                    <h3>➕ Add New User</h3>
+                    <form id="addUserForm">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" id="newUsername" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="newPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">➕ Add User</button>
+                    </form>
+                </div>
+
+                <div class="settings-card">
+                    <h3>📋 User List (${regularUsers.length} users)</h3>
+                    ${regularUsers.length > 0 ? `<div class="user-list">${userListHTML}</div>` : '<p style="color: #666;">No users yet. Add your first user above!</p>'}
+                </div>
+            `;
+
+            document.getElementById('addUserForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addNewUser();
+            });
+        }
+
+        function addNewUser() {
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+
+            if (users.find(u => u.username === username)) {
+                showAlert('❌ Username already exists!', 'danger');
+                return;
+            }
+
+            const newUser = {
+                username: username,
+                password: hashPassword(password),
+                role: 'user',
+                createdAt: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+
+            showAlert(`✓ User "${username}" added successfully!`, 'success');
+            showUserManagement();
+        }
+
+        function deleteUser(username) {
+            if (!confirm(`Delete user "${username}"? This cannot be undone!`)) return;
+
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            users = users.filter(u => u.username !== username);
+            localStorage.setItem('users', JSON.stringify(users));
+
+            showAlert(`✓ User "${username}" deleted`, 'success');
+            showUserManagement();
+        }
+
+        function resetUserPassword(username) {
+            const newPassword = prompt(`Enter new password for user "${username}":`);
+            if (!newPassword) return;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.username === username);
+            if (user) {
+                user.password = hashPassword(newPassword);
+                localStorage.setItem('users', JSON.stringify(users));
+                showAlert(`✓ Password reset for "${username}"`, 'success');
+            }
+        }
+
+        function showExpenses() {
+            document.getElementById('tabContainer').innerHTML = `
+                <h2>💰 My Expenses</h2>
+                <div class="settings-card">
+                    <p>Your personal expense tracker will appear here.</p>
+                    <p style="margin-top: 10px; color: #666;">
+                        This would include all the expense management features from the previous version.
+                    </p>
+                </div>
+            `;
+        }
+
+        function showSettings() {
+            document.getElementById('tabContainer').innerHTML = `
+                <h2>⚙️ Settings</h2>
+
+                <div class="settings-card">
+                    <h3>🔑 Change Your Password</h3>
+                    <form id="changePasswordForm">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="newPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning">🔒 Update Password</button>
+                    </form>
+                </div>
+            `;
+
+            document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                changePassword();
+            });
+        }
+
+        function changePassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+
+            if (hashPassword(current) !== currentUser.password) {
+                showAlert('❌ Current password incorrect!', 'danger');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.username === currentUser.username);
+            if (user) {
+                user.password = hashPassword(newPass);
+                currentUser.password = user.password;
+                localStorage.setItem('users', JSON.stringify(users));
+                sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showAlert('✓ Password changed successfully!', 'success');
+                document.getElementById('changePasswordForm').reset();
+            }
+        }
+
+        function showHostingGuide() {
+            document.getElementById('tabContainer').innerHTML = `
+                <h2>🌐 Host Your Site Live - FREE!</h2>
+
+                <div class="help-box">
+                    <h4>🎉 Ready to go live?</h4>
+                    <p>Follow these simple steps to host your site for FREE!</p>
+                </div>
+
+                <div class="settings-card">
+                    <h3>📋 Option 1: GitHub Pages (Recommended)</h3>
+                    <ol style="line-height: 2; margin: 15px 0;">
+                        <li>Go to <a href="https://github.com" target="_blank">github.com</a> and create free account</li>
+                        <li>Click "New Repository"</li>
+                        <li>Name it: <code>poultry-farm</code></li>
+                        <li>Click "Add file" → "Upload files"</li>
+                        <li>Upload this HTML file</li>
+                        <li>Go to Settings → Pages</li>
+                        <li>Select "main" branch → Save</li>
+                        <li>Your site will be live at: <code>yourusername.github.io/poultry-farm</code></li>
+                    </ol>
+                    <p style="color: #666;">⏱️ Takes 5 minutes • 💰 100% Free • 🔒 Secure</p>
+                </div>
+
+                <div class="settings-card">
+                    <h3>📋 Option 2: Netlify (Easiest)</h3>
+                    <ol style="line-height: 2; margin: 15px 0;">
+                        <li>Go to <a href="https://netlify.com" target="_blank">netlify.com</a></li>
+                        <li>Sign up (free)</li>
+                        <li>Drag and drop this HTML file</li>
+                        <li>Done! You get a live URL instantly</li>
+                    </ol>
+                    <p style="color: #666;">⏱️ Takes 2 minutes • 💰 Free forever • 🚀 Auto SSL</p>
+                </div>
+
+                <div class="settings-card">
+                    <h3>📋 Option 3: Google Drive (Quick Share)</h3>
+                    <ol style="line-height: 2; margin: 15px 0;">
+                        <li>Upload HTML file to Google Drive</li>
+                        <li>Right-click → "Get link"</li>
+                        <li>Change to "Anyone with link"</li>
+                        <li>Click "Copy link"</li>
+                        <li>Share with your team</li>
+                    </ol>
+                    <p style="color: #666;">⏱️ Takes 1 minute • 💰 Free • ⚠️ Not a proper website</p>
+                </div>
+
+                <div class="help-box">
+                    <h4>💡 Need Help?</h4>
+                    <p>I recommend GitHub Pages for the best experience. It's free, reliable, and gives you a proper website URL!</p>
+                </div>
+            `;
+        }
+
+        function loadUserInterface() {
+            const nav = document.getElementById('mainNav');
+            nav.innerHTML = `
+                <button class="nav-tab active" onclick="showUserTab('expenses')">💰 My Expenses</button>
+                <button class="nav-tab" onclick="showUserTab('activity')">🔍 Activity</button>
+                <button class="nav-tab" onclick="showUserTab('settings')">⚙️ Settings</button>
+            `;
+
+            showUserTab('expenses');
+        }
+
+        function showUserTab(tab) {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'expenses') {
+                showExpenses();
+            } else if (tab === 'activity') {
+                showUserActivity();
+            } else if (tab === 'settings') {
+                showSettings();
+            }
+        }
+
+        function showUserActivity() {
+            document.getElementById('tabContainer').innerHTML = `
+                <h2>🔍 My Activity</h2>
+                <div class="settings-card">
+                    <p>Your login history and activity will appear here.</p>
+                </div>
+            `;
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.removeItem('currentUser');
+                location.reload();
+            }
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 3000);
+        }
+
+        // Initialize on page load
+        initializeSystem();
+
+        // Check for existing session
+        const savedUser = sessionStorage.getItem('currentUser');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            isAdmin = currentUser.role === 'admin';
+            showApp();
+        }
+    </script>
+</body>
+</html>
